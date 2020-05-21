@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>  
+    <!-- Directory for the px4 fimware -->
+    <arg name="bag_dir" default="$(find uav_mavros_simulation)/rosbags/UAST_w19/manual_flight_rosbag.bag"/>
+    <node pkg="uav_mavros_simulation" name="simplify_track"  type="SimplifyTrack.py" args="$(arg bag_dir)" output="screen" /> 
+
+</launch>
