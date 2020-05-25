@@ -49,7 +49,7 @@ class MarkerDetector:
         self.distCoeffs = np.array([0.0] * 5)
 
         #Load the dictionary that was used to generate the markers.
-        self.dictionary = cv.aruco.Dictionary_get(cv.aruco.DICT_4X4_50)
+        self.dictionary = cv.aruco.Dictionary_get(cv.aruco.DICT_6X6_250)
         # Initialize the detector parameters using default values
         self.parameters =  cv.aruco.DetectorParameters_create()
         

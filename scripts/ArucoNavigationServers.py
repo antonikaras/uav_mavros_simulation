@@ -104,21 +104,56 @@ class ArucoNavigationController():
             new_sp.twist.linear.z = zPID(-self.markerPos[2])
             new_sp.twist.angular.z = yawPID(self.markerPos[3])
 
-            print(np.linalg.norm(self.markerPos[0:3] - np.array([0.0, 0.0, -self.markerHeight])))
+            #print(np.linalg.norm(self.markerPos[0:3] - np.array([0.0, 0.0, -self.markerHeight])))
 
             self.cmd_vel_pub.publish(new_sp)
-        
-        self.set_mode(0, 'AUTO.LOITER')
 
-        resp = False
-        if (np.linalg.norm(self.markerPos[0:3] - np.array([0.0, 0.0, self.markerHeight])) < 0.5):
-            resp = True
-
-        return goto_arucoResponse(resp)
+        return goto_arucoResponse(np.linalg.norm(self.markerPos[0:3] - np.array([0.0, 0.0, -self.markerHeight])))
     
     def LandAruco(self, req):
         ''' Land on the aruco marker '''
-        pass
+
+        rospy.loginfo('Landing on the aruco marker')
+        timeOut = req.timeOut
+
+        new_sp = TwistStamped()
+        while self.UAV_state.mode != "OFFBOARD" :
+            rospy.sleep(0.1)
+            self.set_mode(0, 'OFFBOARD')
+            # Publish something to activate the offboard mode
+            self.cmd_vel_pub.publish(new_sp)
+        
+        if not mavros.command.arming(True) :
+            mavros.command.arming(True)
+            
+        ts = rospy.Time.now()
+
+        xPID = PID(.4, 0.075, 0.02, output_limits=(-.5, 0.5), setpoint=0.0)
+        yPID = PID(.4, 0.075, 0.02, output_limits=(-.5, 0.5), setpoint=0.0)
+        zPID = PID(.5, 0.0, 0.05, output_limits=(-0.75, 0.75), setpoint=0.0)
+        yawPID = PID(.2, 0.0, 0.0, output_limits=(-1.0, 1.0), setpoint=0.0)
+        
+        prev_height = self.markerPos[2]
+        ts2 = rospy.Time.now()
+
+        while (rospy.Time.now() - ts < rospy.Duration(timeOut)):
+                
+            new_sp = TwistStamped()
+            new_sp.twist.linear.x = xPID(-self.markerPos[0])
+            new_sp.twist.linear.y = yPID(-self.markerPos[1])
+            new_sp.twist.linear.z = zPID(-self.markerPos[2])
+            new_sp.twist.angular.z = yawPID(self.markerPos[3])
+            
+            if self.markerPos[2] != prev_height:
+                ts2 = rospy.Time.now()
+                prev_height = self.markerPos[2]
+            
+            if rospy.Time.now() - ts2 > rospy.Duration(1.0):
+                break
+            #print(np.linalg.norm(self.markerPos[0:3] - np.array([0.0, 0.0, -self.markerHeight])))
+
+            self.cmd_vel_pub.publish(new_sp)
+        return land_arucoResponse(np.linalg.norm(self.markerPos[0:3] - np.array([0.0, 0.0, 0.0])))
 
 ###################################################################################################
 if __name__ == "__main__":

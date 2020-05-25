@@ -78,14 +78,14 @@
   <library_effects>
     <effect id="Material-effect">
       <profile_COMMON>
-        <newparam sid="marker33_png-surface">
+        <newparam sid="marker23_png-surface">
           <surface type="2D">
-            <init_from>marker33_png</init_from>
+            <init_from>marker23_png</init_from>
           </surface>
         </newparam>
-        <newparam sid="marker33_png-sampler">
+        <newparam sid="marker23_png-sampler">
           <sampler2D>
-            <source>marker33_png-surface</source>
+            <source>marker23_png-surface</source>
           </sampler2D>
         </newparam>
         <technique sid="common">
@@ -94,7 +94,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <diffuse>
-              <texture texture="marker33_png-sampler" texcoord="UVMap"/>
+              <texture texture="marker23_png-sampler" texcoord="UVMap"/>
             </diffuse>
             <index_of_refraction>
               <float sid="ior">1.45</float>
@@ -105,8 +105,8 @@
     </effect>
   </library_effects>
   <library_images>
-    <image id="marker33_png" name="marker33_png">
-      <init_from>marker33.png</init_from>
+    <image id="marker23_png" name="marker23_png">
+      <init_from>marker23.png</init_from>
     </image>
   </library_images>
   <library_materials>

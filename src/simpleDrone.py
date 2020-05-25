@@ -10,7 +10,8 @@ import mavros.command
 import mavros_msgs.msg
 import mavros_msgs.srv
 from sensor_msgs.msg import NavSatFix
-from uav_mavros_simulation.srv import target_global_pos, target_global_posResponse, target_local_pos, target_local_posResponse 
+from uav_mavros_simulation.srv import target_global_pos, target_global_posResponse, target_local_pos, target_local_posResponse, \
+                                        goto_aruco, goto_arucoResponse, land_aruco, land_arucoResponse 
 import sys
 import signal
 from geometry_msgs.msg import Vector3, TwistStamped
@@ -72,6 +73,9 @@ class SimpleDrone():
         # goto_pos_services
         self.goto_glo_pos_serv = rospy.ServiceProxy("target_global_pos", target_global_pos)
         self.goto_loc_pos_serv = rospy.ServiceProxy("target_local_pos", target_local_pos)
+        # aruco based services
+        self.goto_aruco_serv = rospy.ServiceProxy('goto_aruco', goto_aruco)
+        self.land_aruco_serv = rospy.ServiceProxy('land_aruco', land_aruco)
 
         self.setpoint_msg = mavros.setpoint.PoseStamped(
             header=mavros.setpoint.Header(
@@ -238,7 +242,9 @@ class SimpleDrone():
         print("----- Swarm commander available inputs -----")
         print("exit -> to close the swarm commander")
         print("goto x y z yaw  -> uav will go to the  specified location location")
+        print("goto aruco [timeout] -> the uav will got to the aruco marker, timeOut is optional")
         print("land [x y z yaw] -> uav will land at its current position or at the optional x, y, z, yaw")
+        print("land aruco -> uav will land on the aruco marker")
         print("return -> uav will return to its home position and land")
         print("--------------------------------------------")
     
@@ -270,16 +276,33 @@ class SimpleDrone():
                     pos.append(float(inp[4]))
 
                 if inp[0] == 'goto':
-                    if len(inp) != 5:
-                        self.Help()
-                        continue   
-                    else:             
+                    if len(inp) == 5:
                         dist = self.GotoPos(pos)
                         self.Hover()
+                    elif inp[1] == 'aruco':
+                        timeOut = 60
+                        if len(inp) == 3:
+                            timeOut = inp[2]
+                        dist = self.goto_aruco_serv(timeOut)
+                        self.Hover()
+                    else:             
+                        self.Help()
+                        continue   
                     print("Position reached, distance ", dist) 
                 elif inp[0] == 'land':
                     if len(inp) == 5:
                         self.Land(pos)
+                    elif inp[1] == 'aruco':
+                        # First go to the aruco marker
+                        dist = self.goto_aruco_serv(60)
+                        rospy.loginfo('Distance to marker ' + str(dist.dist))
+                        if dist.dist < 1.0:
+                            self.land_aruco_serv(60)
+                            self.Land()
+                        else:
+                            rospy.logerr('Marker too far')
+                            self.Hover()
+                            continue
                     else:
                         self.Help()
                 else:
