@@ -5,7 +5,7 @@
 * ROS, tested on ros-melodic
 * the mavros package v1.11.0, https://dev.px4.io/master/en/ros/mavros_installation.html
 * QGroundControl, http://qgroundcontrol.com/
-* the simple_pid python package, pip install simple-pid
+* the simple_pid python package, ```pip install simple-pid```
 * PX4 firmware, tested on version v1.11.0-beta1, ``` git clone https://github.com/px4/firmware```
 
 ## Instructions
