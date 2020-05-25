@@ -6,7 +6,7 @@ export PX4_HOME_LON=10.32480953
 export PX4_HOME_ALT=7.4000000
 
 # Source the PX4 Firmware directory
-if [ -z "$1"]; then
+if [ -z "$1" ]; then
 # change this to a location of your firmware! 
 FIRMDIR="/home/antony/Documents/Git/Firmware"
 else
@@ -25,4 +25,5 @@ export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:$(pwd)
 export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:$(pwd)/Tools/sitl_gazebo
 
 # Run basic PX4 SITL
-roslaunch px4 posix_sitl.launch
+echo $world
+roslaunch px4 new_posix_sitl.launch world:=$2 vehicle:=$3 sdf:=$4

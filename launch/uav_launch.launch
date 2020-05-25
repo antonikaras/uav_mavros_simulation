@@ -2,11 +2,14 @@
 <launch>  
     <!-- Directory for the px4 fimware -->
     <arg name="firm_dir" default="/home/antony/Documents/Git/Firmware"/>
-    <node pkg="uav_mavros_simulation" name="uav"  type="px4_launch_gazebo.sh" args="$(arg firm_dir)" output="screen" />
+    <arg name='world' default='empty'/>
+    <arg name='vehicle' default='iris'/>
+    <arg name='sdf' default='$(arg vehicle)'/>
 
-    <!-- Initialize uav telemetry -->
-    <include file="$(find mavros)/launch/px4.launch">
-        <arg name="fcu_url" value="udp://:14540@127.0.0.1:14557"/>
-    </include>    
+    <!-- Start the services -->
+    <node pkg="uav_mavros_simulation" name="uav_pos_services"  type="target_pos_servers.py" output="screen"></node>
+    <node pkg="uav_mavros_simulation" name="marker_detector" type="MarkerDetection.py" output="screen"></node>
+    <!--<node pkg="uav_mavros_simulation" name="aruco_navigation" type="ArucoNavigationServers.py" output="screen"></node>-->
 
+    <node pkg="uav_mavros_simulation" name="uav"  type="px4_launch_gazebo.sh" args="$(arg firm_dir) $(arg world) $(arg vehicle) $(arg sdf)" output="screen" />
 </launch>

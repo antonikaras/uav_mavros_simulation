@@ -1,0 +1,3 @@
+mavros_msgs/PositionTarget goal_pos
+---
+float64 dist

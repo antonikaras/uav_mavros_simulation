@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <model name="aruco_marker">
+    <static>true</static>
+    <pose>0 0 0 0 0 0</pose>
+    <link name="link">
+
+    <collision name="collision">
+    <pose>0 0 0 0 0 0</pose>
+      <geometry>
+        <box>
+          <size>2 2 0.01</size>
+        </box>
+      </geometry>
+    </collision>
+
+    <visual name="visual">
+      <geometry>
+        <mesh>
+          <uri>model://aruco_marker/meshes/model.dae</uri>
+        </mesh>
+      </geometry>
+    </visual>
+
+  </link>
+</model>
+
+</sdf>
