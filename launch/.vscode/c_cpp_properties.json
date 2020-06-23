@@ -1,0 +1,30 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "",
+        "limitSymbolsToIncludedHeaders": true
+      },
+      "includePath": [
+        "/home/antony/catkin_ws/devel/include/**",
+        "/opt/ros/melodic/include/**",
+        "/home/antony/catkin_ws/src/mavros/libmavconn/include/**",
+        "/home/antony/catkin_ws/src/mav_comm/mav_msgs/include/**",
+        "/home/antony/catkin_ws/src/mav_comm/mav_planning_msgs/include/**",
+        "/home/antony/catkin_ws/src/mavlink_lora_2.0/ros/mavlink_lora/include/**",
+        "/home/antony/catkin_ws/src/mavros/mavros/include/**",
+        "/home/antony/catkin_ws/src/mavros/mavros_msgs/include/**",
+        "/home/antony/catkin_ws/src/rotors_simulator/rotors_control/include/**",
+        "/home/antony/catkin_ws/src/rotors_simulator/rotors_gazebo_plugins/include/**",
+        "/home/antony/catkin_ws/src/rotors_simulator/rotors_hil_interface/include/**",
+        "/home/antony/catkin_ws/src/rotors_simulator/rotors_joy_interface/include/**",
+        "/home/antony/catkin_ws/src/mavros/test_mavros/include/**",
+        "/home/antony/catkin_ws/src/turtlebot/turtlebot3_simulations/turtlebot3_fake/include/**",
+        "/home/antony/catkin_ws/src/turtlebot/turtlebot3_simulations/turtlebot3_gazebo/include/**",
+        "/home/antony/catkin_ws/src/turtlebot/turtlebot3/turtlebot3_slam/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS"
+    }
+  ]
+}

@@ -9,7 +9,8 @@ import mavros.setpoint
 import mavros.command
 import mavros_msgs.msg
 import mavros_msgs.srv
-from sensor_msgs.msg import NavSatFix
+from sensor_msgs.msg import NavSatFix, Imu
+from mavros_msgs.srv import CommandLong
 from uav_mavros_simulation.srv import target_global_pos, target_global_posResponse, target_local_pos, target_local_posResponse, \
                                         goto_aruco, goto_arucoResponse, land_aruco, land_arucoResponse 
 import sys
@@ -58,6 +59,8 @@ class SimpleDrone():
         # /mavros/global_position/global
         global_position_sub = rospy.Subscriber('mavros/global_position/global',
              NavSatFix, self._global_position_callback)
+        # /mavros/imu/data
+        rospy.Subscriber('/mavros/imu/data', Imu, self.IMU_callback)
 
         # setup publisher
         # /mavros/setpoint/position/local
@@ -68,6 +71,8 @@ class SimpleDrone():
         # setup services
         # /mavros/cmd/arming
         self.set_arming = rospy.ServiceProxy('mavros/cmd/arming', mavros_msgs.srv.CommandBool)
+        # mavros/cmd/command
+        self.command_srv = rospy.ServiceProxy('mavros/cmd/command', mavros_msgs.srv.CommandLong)
         # /mavros/set_mode
         self.set_mode = rospy.ServiceProxy('mavros/set_mode', mavros_msgs.srv.SetMode)      
         # goto_pos_services
@@ -96,6 +101,15 @@ class SimpleDrone():
     def signal_handler(self, signal, frame):
         print('You pressed Ctrl+C!')
         sys.exit(0)
+
+    def IMU_callback(self, data):
+        ''' IMU data subscriber that triggers the parachute in case of failure'''
+        # Read the linear_accelaration on z-axis
+        acc_z = data.linear_acceleration.z
+
+        # if the acceleration is too low triger the parachute
+        if acc_z < 6.0:
+            self.command_srv(broadcast=False, command=185, param1=1.0)
 
     def _state_callback(self, topic):
         self.UAV_state.armed = topic.armed
