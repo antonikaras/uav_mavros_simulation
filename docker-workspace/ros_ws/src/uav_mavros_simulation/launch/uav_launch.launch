@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <launch>  
     <!-- Directory for the px4 fimware -->
-    <arg name="firm_dir" default="/home/antony/Documents/Git/Firmware"/>
     <arg name='world' default='empty'/>
     <arg name='vehicle' default='iris'/>
     <arg name='sdf' default='$(arg vehicle)'/>
@@ -11,5 +10,4 @@
     <node pkg="uav_mavros_simulation" name="marker_detector" type="MarkerDetection.py" output="screen"></node>
     <node pkg="uav_mavros_simulation" name="aruco_navigation" type="ArucoNavigationServers.py" output="screen"></node>
 
-    <node pkg="uav_mavros_simulation" name="uav"  type="px4_launch_gazebo.sh" args="$(arg firm_dir) $(arg world) $(arg vehicle) $(arg sdf)" output="screen" />
 </launch>

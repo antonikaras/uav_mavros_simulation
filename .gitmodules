@@ -1,0 +1,4 @@
+[submodule "docker-workspace/Firmware"]
+	path = docker-workspace/Firmware
+	url = https://github.com/PX4/Firmware.git
+    branch = tags/v1.11.1
