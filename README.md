@@ -1,12 +1,20 @@
 # uav mavros simulation
 
+## Description 
+
+This package was developed as part of the course Introduction to UAS technology at the University of  Southern Denmark. The goal is to land the drone to an ArUCO marker. The drone is simulated using SITL and PX4. 
+
+A video demonstation of the system is here :  https://youtu.be/k1WqiE6d8TA 
+
+The branch docker_env contains a docker environment, without the neeed to install ROS in your system, with instructions on how to run it. 
+
 ## Dependencies
 
 * ROS, tested on ros-melodic
-* the mavros package v1.11.0, https://dev.px4.io/master/en/ros/mavros_installation.html
+* the mavros package v1.10.2, https://dev.px4.io/master/en/ros/mavros_installation.html
 * QGroundControl, http://qgroundcontrol.com/
 * the simple_pid python package, ```pip install simple-pid```
-* PX4 firmware, tested on version v1.11.0-beta1, ``` git clone https://github.com/px4/firmware```
+* PX4 firmware, tested on version v1.10.2, ``` git clone https://github.com/px4/firmware```
 
 ## Instructions
 
