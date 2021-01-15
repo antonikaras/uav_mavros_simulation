@@ -59,8 +59,6 @@ class SimpleDrone():
         # /mavros/global_position/global
         global_position_sub = rospy.Subscriber('mavros/global_position/global',
              NavSatFix, self._global_position_callback)
-        # /mavros/imu/data
-        rospy.Subscriber('/mavros/imu/data', Imu, self.IMU_callback)
 
         # setup publisher
         # /mavros/setpoint/position/local
@@ -101,15 +99,6 @@ class SimpleDrone():
     def signal_handler(self, signal, frame):
         print('You pressed Ctrl+C!')
         sys.exit(0)
-
-    def IMU_callback(self, data):
-        ''' IMU data subscriber that triggers the parachute in case of failure'''
-        # Read the linear_accelaration on z-axis
-        acc_z = data.linear_acceleration.z
-
-        # if the acceleration is too low triger the parachute
-        if acc_z < 6.0:
-            self.command_srv(broadcast=False, command=185, param1=1.0)
 
     def _state_callback(self, topic):
         self.UAV_state.armed = topic.armed
@@ -296,7 +285,7 @@ class SimpleDrone():
                     elif inp[1] == 'aruco':
                         timeOut = 60
                         if len(inp) == 3:
-                            timeOut = inp[2]
+                            timeOut = float(inp[2])
                         dist = self.goto_aruco_serv(timeOut)
                         self.Hover()
                     else:             
@@ -307,11 +296,18 @@ class SimpleDrone():
                     if len(inp) == 5:
                         self.Land(pos)
                     elif inp[1] == 'aruco':
+                        timeOut_1 = 60
+                        timeOut_2 = 60
+                        if len(inp) == 3:
+                            timeOut_1 = float(inp[2]) if float(inp[2]) > 0 else 60
+                        if len(inp) == 4:
+                            timeOut_1 = float(inp[2]) if float(inp[2]) > 0 else 60
+                            timeOut_2 = float(inp[3]) if float(inp[3]) > 0 else 60
                         # First go to the aruco marker
-                        dist = self.goto_aruco_serv(60)
+                        dist = self.goto_aruco_serv(timeOut_1)
                         rospy.loginfo('Distance to marker ' + str(dist.dist))
                         if dist.dist < 1.0:
-                            self.land_aruco_serv(60)
+                            self.land_aruco_serv(timeOut_2)
                             self.Land()
                         else:
                             rospy.logerr('Marker too far')

@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /workspace/ros_ws/devel/.private/uav_mavros_simulation/setup.sh

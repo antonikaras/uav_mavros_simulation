@@ -51,7 +51,7 @@ class ArucoNavigationController():
         self.pos = [0.0] * 4
         self.markerPos = [0.0] * 4
         self.UAV_state = mavros_msgs.msg.State()
-        self.markerHeight = 20.0 # Height above the marker
+        self.markerHeight = 10.0 # Height above the marker
 
         # Setup rate
         self.rate = rospy.Rate(30)
@@ -90,23 +90,28 @@ class ArucoNavigationController():
             
         ts = rospy.Time.now()
 
-        xPID = PID(.25, 0.05, 0.01, output_limits=(-.5, 0.5), setpoint=0.0)
-        yPID = PID(.25, 0.05, 0.01, output_limits=(-.5, 0.5), setpoint=0.0)
-        zPID = PID(.2, 0.0, 0.05, output_limits=(-0.5, 0.5), setpoint=self.markerHeight)
-        yawPID = PID(.2, 0.0, 0.0, output_limits=(-1.0, 1.0), setpoint=0.0)
-        
+        xPID = PID(.25, 0.05, 0.01, output_limits=(-.5, 0.5), setpoint=0.0, sample_time = 0.0001)
+        yPID = PID(.25, 0.05, 0.01, output_limits=(-.5, 0.5), setpoint=0.0, sample_time = 0.0001)
+        zPID = PID(.2, 0.0, 0.05, output_limits=(-0.5, 0.5), setpoint=self.markerHeight, sample_time = 0.0001)
+        yawPID = PID(.2, 0.0, 0.0, output_limits=(-1.0, 1.0), setpoint=0.0, sample_time = 0.0001)
+
         while np.linalg.norm(self.markerPos[0:3] - np.array([0.0, 0.0, -self.markerHeight])) > 1.0 and \
                 (rospy.Time.now() - ts < rospy.Duration(timeOut)):
-                
+
             new_sp = TwistStamped()
-            new_sp.twist.linear.x = xPID(-self.markerPos[0])
-            new_sp.twist.linear.y = yPID(-self.markerPos[1])
+            
+            # Change the speed only when the marker is detected
+            new_sp.twist.linear.x = xPID(self.markerPos[0])
+            new_sp.twist.linear.y = yPID(self.markerPos[1])
             new_sp.twist.linear.z = zPID(-self.markerPos[2])
             new_sp.twist.angular.z = yawPID(self.markerPos[3])
 
             #print(np.linalg.norm(self.markerPos[0:3] - np.array([0.0, 0.0, -self.markerHeight])))
 
             self.cmd_vel_pub.publish(new_sp)
+
+        # Delete the PID instances
+        del xPID, yPID, zPID, yawPID
 
         return goto_arucoResponse(np.linalg.norm(self.markerPos[0:3] - np.array([0.0, 0.0, -self.markerHeight])))
     
@@ -128,31 +133,37 @@ class ArucoNavigationController():
             
         ts = rospy.Time.now()
 
-        xPID = PID(.4, 0.075, 0.02, output_limits=(-.5, 0.5), setpoint=0.0)
-        yPID = PID(.4, 0.075, 0.02, output_limits=(-.5, 0.5), setpoint=0.0)
-        zPID = PID(.5, 0.0, 0.05, output_limits=(-0.75, 0.75), setpoint=0.0)
-        yawPID = PID(.2, 0.0, 0.0, output_limits=(-1.0, 1.0), setpoint=0.0)
+        xPID = PID(.25, 0.0, 0.0, output_limits=(-.5, 0.5), setpoint=0.0, sample_time = 0.0001)
+        yPID = PID(.25, 0.0, 0.0, output_limits=(-.5, 0.5), setpoint=0.0, sample_time = 0.0001)
+        yawPID = PID(.25, 0.0, 0.0, output_limits=(-1.0, 1.0), setpoint=0.0, sample_time = 0.0001)
         
         prev_height = self.markerPos[2]
         ts2 = rospy.Time.now()
 
         while (rospy.Time.now() - ts < rospy.Duration(timeOut)):
-                
-            new_sp = TwistStamped()
-            new_sp.twist.linear.x = xPID(-self.markerPos[0])
-            new_sp.twist.linear.y = yPID(-self.markerPos[1])
-            new_sp.twist.linear.z = zPID(-self.markerPos[2])
-            new_sp.twist.angular.z = yawPID(self.markerPos[3])
             
+            dist = np.linalg.norm(np.array([self.markerPos[0], self.markerPos[1]]))
+            new_sp = TwistStamped()
+
+            # Change the speed only when the marker is detected
+            new_sp.twist.linear.x = xPID(self.markerPos[0])
+            new_sp.twist.linear.y = yPID(self.markerPos[1])
+            new_sp.twist.linear.z = -min(0.3, 0.1 / dist)
+            new_sp.twist.angular.z = yawPID(self.markerPos[3])
+
             if self.markerPos[2] != prev_height:
                 ts2 = rospy.Time.now()
                 prev_height = self.markerPos[2]
-            
+
             if rospy.Time.now() - ts2 > rospy.Duration(1.0):
                 break
             #print(np.linalg.norm(self.markerPos[0:3] - np.array([0.0, 0.0, -self.markerHeight])))
 
             self.cmd_vel_pub.publish(new_sp)
+
+        # Delete the PID instances
+        del xPID, yPID, yawPID
+
         return land_arucoResponse(np.linalg.norm(self.markerPos[0:3] - np.array([0.0, 0.0, 0.0])))
 
 ###################################################################################################

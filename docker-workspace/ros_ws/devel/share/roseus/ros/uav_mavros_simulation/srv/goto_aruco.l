@@ -1,0 +1,1 @@
+/workspace/ros_ws/devel/.private/uav_mavros_simulation/share/roseus/ros/uav_mavros_simulation/srv/goto_aruco.l

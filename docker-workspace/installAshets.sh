@@ -1,0 +1,1 @@
+ln -s /workspace/ros_ws/src/uav_mavros_simulation/init.d-posix/* /workspace/Firmware/ROMFS/px4fmu_common/init.d-posix

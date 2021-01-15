@@ -1,3 +1,5 @@
+#!/bin/bash
+
 source /workspace/ros_ws/devel/setup.bash
 source /opt/ros/melodic/setup.bash
 
@@ -12,11 +14,11 @@ export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/workspace/Firmware:/workspace/Firmwar
 #export PX4_HOME_ALT=7.4000000
 
 # bash /workspace/install_geographiclib_datasets.sh
+alias seit-ws="source /workspace/ros_ws/devel/setup.bash && source /workspace/ros_ws/src/uav_mavros_simulation/scripts/setup_gazebo.bash"
+alias peit-ws="cd /workspace/ros_ws && seit-ws"
+alias build-ws="peit-ws && catkin build"
+alias src="source /workspace/ros_ws/devel/setup.bash"
 
-#alias seit-ws="source /workspace/ros_ws/devel/setup.bash && source /workspace/ros_ws/src/eit_playground/setup_gazebo.bash"
-#alias peit-ws="cd /workspace/ros_ws && seit-ws"
-#alias beit-ws="peit-ws && catkin build"
-alias src="source devel/setup.bash"
 
 alias killgazebo="pkill -9 gazebo & pkill -9 gzserver & pkill -9 gzclient & pkill -9 gazebo_gui"
 

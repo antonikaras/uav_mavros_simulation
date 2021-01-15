@@ -1,13 +1,21 @@
 <?xml version="1.0"?>
 <launch>  
     <!-- Directory for the px4 fimware -->
-    <arg name='world' default='empty'/>
-    <arg name='vehicle' default='iris'/>
+    <arg name='world' default='aruco'/>
+    <arg name='vehicle' default='iris_fpv_cam'/>
     <arg name='sdf' default='$(arg vehicle)'/>
+    <arg name="gui" default="true"/>
 
     <!-- Start the services -->
     <node pkg="uav_mavros_simulation" name="uav_pos_services"  type="target_pos_servers.py" output="screen"></node>
     <node pkg="uav_mavros_simulation" name="marker_detector" type="MarkerDetection.py" output="screen"></node>
     <node pkg="uav_mavros_simulation" name="aruco_navigation" type="ArucoNavigationServers.py" output="screen"></node>
 
+    <!-- Create the drones -->
+    <include file="$(find uav_mavros_simulation)/launch/new_posix_sitl.launch">
+        <arg name="vehicle" value="$(arg vehicle)"/>
+        <arg name="world" value="$(arg world)"/>
+        <arg name="sdf" value="$(arg sdf)"/>
+        <arg name="gui" value="$(arg gui)"/>
+    </include>
 </launch>

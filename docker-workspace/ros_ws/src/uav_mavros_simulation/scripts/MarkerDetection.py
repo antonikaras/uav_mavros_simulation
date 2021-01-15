@@ -49,7 +49,7 @@ class MarkerDetector:
         self.distCoeffs = np.array([0.0] * 5)
 
         #Load the dictionary that was used to generate the markers.
-        self.dictionary = cv.aruco.Dictionary_get(cv.aruco.DICT_6X6_250)
+        self.dictionary = cv.aruco.Dictionary_get(cv.aruco.DICT_4X4_50)
         # Initialize the detector parameters using default values
         self.parameters =  cv.aruco.DetectorParameters_create()
         
@@ -79,7 +79,8 @@ class MarkerDetector:
     def Aruco_marker_detector(self):
         """ Use the build in python library to detect the aruco marker and its coordinates """
         img = self.frame.copy() 
-        
+        frame_out = self.frame.copy()
+
         # Detect the markers in the image
         markerCorners, markerIds, rejectedCandidates = cv.aruco.detectMarkers(img, self.dictionary, parameters=self.parameters)
         # Get the transformation matrix to the marker
@@ -88,7 +89,7 @@ class MarkerDetector:
             markerSize = 2.0
             axisLength = 3.0
 
-            rvecs, tvecs, _ = cv.aruco.estimatePoseSingleMarkers( markerCorners, markerSize, self.K, self.distCoeffs)
+            rvecs, tvecs = cv.aruco.estimatePoseSingleMarkers( markerCorners, markerSize, self.K, self.distCoeffs)
             
             # Draw the axis on the marker
             frame_out = cv.aruco.drawAxis( img, self.K, self.distCoeffs, rvecs, tvecs, axisLength)
@@ -103,14 +104,14 @@ class MarkerDetector:
 
             # Publish the position of the marker
             marker_pos = PT()
-            marker_pos.position.x = tvecs[0]
-            marker_pos.position.y = - tvecs[2]
+            marker_pos.position.x = tvecs[2]
+            marker_pos.position.y = tvecs[0]
             marker_pos.position.z = tvecs[1]
             marker_pos.yaw = eul[2]  * np.pi / 180.0
             self.aruco_marker_pos_pub.publish(marker_pos)
 
-            # Publish the image with the detected marker
-            self.aruco_marker_img_pub.publish(self.bridge.cv2_to_imgmsg(frame_out, "bgr8"))  
+        # Publish the image with the detected marker
+        self.aruco_marker_img_pub.publish(self.bridge.cv2_to_imgmsg(frame_out, "bgr8"))  
 
 ###################################################################################################
 if __name__ == "__main__":
